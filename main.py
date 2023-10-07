@@ -1,16 +1,17 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from tasks_queue import TaskData, generate_task_id, Task, TasksQueue
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def thread(test):
+    while True:
+        pass
 
 
-# Press the green button in the gutter to run the script.
+def main():
+    queue = TasksQueue(max_workers=50)
+    queue.add_task(thread, (True,))
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    main()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
