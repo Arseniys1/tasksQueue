@@ -1,15 +1,12 @@
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 
+from helpers import get_original_function_from_provide_wrappers
+from tasks_entry import entry
+
 
 def generate_task_id():
     return str(uuid.uuid4())
-
-
-def function_wrapper(fn):
-    def function_output(*args, **kwargs):
-        fn(*args, **kwargs)
-    return function_output
 
 
 class TaskData:
@@ -37,12 +34,23 @@ class TaskData:
 
 
 class Task:
-    def __init__(self, task_id, future, fn, *args, **kwargs) -> None:
+    def __init__(self, task_id, fn, *args, **kwargs) -> None:
         super().__init__()
         self.task_id = task_id
-        self.future = future
+        self.future = None
         self.fn = fn
         self.task_data = TaskData(self.task_id, *args, **kwargs)
+
+    def set_future(self, future):
+        self.future = future
+
+
+class Entity:
+    def __init__(self, tasks_queue, task) -> None:
+        super().__init__()
+        self.tasks_queue = tasks_queue
+        self.task = task
+        self.task_data = task.task_data
 
 
 class TasksQueue:
@@ -60,17 +68,30 @@ class TasksQueue:
             else:
                 return task_id
 
+    def provide_to_function(self, fn, task, *args):
+        function_element = entry.get_function_element(fn)
+        args = list(args)
+        provide_elements = []
+        names_reverse = function_element.names.copy()
+        names_reverse.reverse()
+        for name in names_reverse:
+            if name == "entity":
+                entity = Entity(self, task)
+                provide_elements.append(entity)
+            elif name == "task_id":
+                provide_elements.append(task.task_id)
+        return tuple(provide_elements + args)
+
     def add_task(self, fn, *args, **kwargs) -> str:
+        fn = get_original_function_from_provide_wrappers(fn)
         task_id = self.generate_unique_task_id()
+        task = Task(task_id, fn, *args, **kwargs)
         self.task_ids.append(task_id)
-        future = self.executor.submit(function_wrapper(fn), *args, **kwargs)
-        task = Task(task_id, future, fn, *args, **kwargs)
         self.tasks.append(task)
+        provided_args = self.provide_to_function(fn, task, *args)
+        future = self.executor.submit(fn, *provided_args, **kwargs)
+        task.set_future(future)
         return task_id
-
-
-
-
 
 
 
