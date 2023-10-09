@@ -80,6 +80,8 @@ class TasksQueue:
                 provide_elements.append(entity)
             elif name == "task_id":
                 provide_elements.append(task.task_id)
+            elif name == "task":
+                provide_elements.append(task)
         return tuple(provide_elements + args)
 
     def add_task(self, fn, *args, **kwargs) -> str:
@@ -93,6 +95,10 @@ class TasksQueue:
         task.set_future(future)
         return task_id
 
+    def get_task_by_id(self, task_id):
+        for task in self.tasks:
+            if task.task_id == task_id:
+                return task
 
 
 

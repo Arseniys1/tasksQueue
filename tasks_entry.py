@@ -32,7 +32,7 @@ class TasksEntry:
             function_element = FunctionElement(fn, names)
             self.function_elements.append(function_element)
         else:
-            function_element.names = list({*function_element.names, *names})
+            [function_element.names.append(name) for name in names if name not in function_element.names]
 
 
 entry = TasksEntry()
