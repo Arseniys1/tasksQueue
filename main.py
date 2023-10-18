@@ -7,10 +7,12 @@ from tasks_queue import TaskData, generate_task_id, Task, TasksQueue
 @provide_entity
 @provide("task_id")
 @provide("task")
-def thread(entity, task_id, task, test):
+@provide("tasks_queue")
+def thread(entity, task_id, task, tasks_queue, test):
     future = task.future
-    while True:
+    while task.work:
         pass
+    print("exit")
 
 
 def main():
@@ -18,6 +20,7 @@ def main():
     task_id = queue.add_task(thread, True)
     task = queue.get_task_by_id(task_id)
     print(task, task_id)
+    queue.set_work(False)
 
 
 if __name__ == "__main__":

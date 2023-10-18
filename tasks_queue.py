@@ -1,7 +1,10 @@
 import uuid
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import requests
 
 from helpers import get_original_function_from_provide_wrappers
+from provide_constants import ENTITY, TASK_ID, TASK, TASKS_QUEUE
 from tasks_entry import entry
 
 
@@ -40,6 +43,7 @@ class Task:
         self.future = None
         self.fn = fn
         self.task_data = TaskData(self.task_id, *args, **kwargs)
+        self.work = True
 
     def set_future(self, future):
         self.future = future
@@ -59,6 +63,7 @@ class TasksQueue:
         self.tasks = []
         self.task_ids = []
         self.executor = executor(*args, **kwargs)
+        self.work = True
 
     def generate_unique_task_id(self) -> str:
         while True:
@@ -75,13 +80,15 @@ class TasksQueue:
         names_reverse = function_element.names.copy()
         names_reverse.reverse()
         for name in names_reverse:
-            if name == "entity":
+            if name == ENTITY:
                 entity = Entity(self, task)
                 provide_elements.append(entity)
-            elif name == "task_id":
+            elif name == TASK_ID:
                 provide_elements.append(task.task_id)
-            elif name == "task":
+            elif name == TASK:
                 provide_elements.append(task)
+            elif name == TASKS_QUEUE:
+                provide_elements.append(self)
         return tuple(provide_elements + args)
 
     def add_task(self, fn, *args, **kwargs) -> str:
@@ -99,6 +106,12 @@ class TasksQueue:
         for task in self.tasks:
             if task.task_id == task_id:
                 return task
+
+    def set_work(self, work):
+        if not work:
+            for task in self.tasks:
+                task.work = False
+        self.work = work
 
 
 
