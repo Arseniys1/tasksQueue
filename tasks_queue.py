@@ -1,3 +1,4 @@
+import json
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -6,6 +7,7 @@ import requests
 from helpers import get_original_function_from_provide_wrappers
 from provide_constants import ENTITY, TASK_ID, TASK, TASKS_QUEUE
 from tasks_entry import entry
+from tasks_worker import worker
 
 
 def generate_task_id():
@@ -27,6 +29,14 @@ class TaskData:
         if "error_url" in self.kwargs:
             return self.kwargs["error_url"]
 
+    def get_callback_success_url(self):
+        if "callback_success_url" in self.kwargs:
+            return self.kwargs["callback_success_url"]
+
+    def get_callback_error_url(self):
+        if "callback_error_url" in self.kwargs:
+            return self.kwargs["callback_error_url"]
+
     def __getattr__(self, name):
         if name in self.kwargs:
             return self.kwargs[name]
@@ -44,9 +54,20 @@ class Task:
         self.fn = fn
         self.task_data = TaskData(self.task_id, *args, **kwargs)
         self.work = True
+        self.future_result = None
+        self.serialize_hide = ["future", "fn", "work", "serialize_hide"]
 
     def set_future(self, future):
         self.future = future
+
+    def set_future_result(self, future_result):
+        self.future_result = future_result
+
+    def __getstate__(self):
+        result = self.__dict__
+        for hide_item in self.serialize_hide:
+            result.pop(hide_item)
+        return result
 
 
 class Entity:
@@ -64,6 +85,7 @@ class TasksQueue:
         self.task_ids = []
         self.executor = executor(*args, **kwargs)
         self.work = True
+        self.worker_task = None
 
     def generate_unique_task_id(self) -> str:
         while True:
@@ -112,6 +134,28 @@ class TasksQueue:
             for task in self.tasks:
                 task.work = False
         self.work = work
+
+    def get_futures_list(self):
+        futures = []
+        for task in self.tasks:
+            futures.append(task.future)
+        return futures
+
+    def get_task_by_future(self, future):
+        for task in self.tasks:
+            if task.future == future:
+                return task
+
+    def run_worker(self):
+        if self.worker_task:
+            return self.worker_task
+        task_id = self.add_task(worker)
+        task = self.get_task_by_id(task_id)
+        self.worker_task = task
+        return task
+
+
+
 
 
 
