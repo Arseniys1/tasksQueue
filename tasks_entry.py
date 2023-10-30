@@ -1,3 +1,5 @@
+import inspect
+
 from helpers import get_original_function_from_provide_wrappers
 
 
@@ -6,6 +8,7 @@ class FunctionElement:
         super().__init__()
         self.fn = fn
         self.names = names
+        self.fn_arguments = inspect.getfullargspec(fn)
 
 
 class TasksEntry:

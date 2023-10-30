@@ -9,7 +9,7 @@ from tasks_queue import TaskData, generate_task_id, Task, TasksQueue
 @provide(TASK_ID)
 @provide(TASK)
 @provide(TASKS_QUEUE)
-def thread(entity, task_id, task, tasks_queue, test, success_url, callback_success_url, callback_error_url):
+def thread(entity, task_id, task, tasks_queue, test, success_url, callback_success_url, callback_error_url, *args, **kwargs):
     future = task.future
     while task.work:
         pass

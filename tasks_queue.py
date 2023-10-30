@@ -1,8 +1,5 @@
-import json
 import uuid
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
-import requests
+from concurrent.futures import ThreadPoolExecutor
 
 from helpers import get_original_function_from_provide_wrappers
 from provide_constants import ENTITY, TASK_ID, TASK, TASKS_QUEUE
@@ -95,7 +92,7 @@ class TasksQueue:
             else:
                 return task_id
 
-    def provide_to_function(self, fn, task, *args):
+    def provide_to_function(self, fn, task, *args, **kwargs):
         function_element = entry.get_function_element(fn)
         args = list(args)
         provide_elements = []
@@ -111,7 +108,11 @@ class TasksQueue:
                 provide_elements.append(task)
             elif name == TASKS_QUEUE:
                 provide_elements.append(self)
-        return tuple(provide_elements + args)
+        kwargs_keys = list(kwargs.keys())
+        for kwarg_name in kwargs_keys:
+            if kwarg_name not in function_element.fn_arguments.args:
+                kwargs.pop(kwarg_name)
+        return tuple(provide_elements + args), kwargs
 
     def add_task(self, fn, *args, **kwargs) -> str:
         fn = get_original_function_from_provide_wrappers(fn)
@@ -119,8 +120,8 @@ class TasksQueue:
         task = Task(task_id, fn, *args, **kwargs)
         self.task_ids.append(task_id)
         self.tasks.append(task)
-        provided_args = self.provide_to_function(fn, task, *args)
-        future = self.executor.submit(fn, *provided_args, **kwargs)
+        provided_args, provided_kwargs = self.provide_to_function(fn, task, *args, **kwargs)
+        future = self.executor.submit(fn, *provided_args, **provided_kwargs)
         task.set_future(future)
         return task_id
 
