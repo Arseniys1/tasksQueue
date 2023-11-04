@@ -1,4 +1,3 @@
-from concurrent.futures import ProcessPoolExecutor
 from time import sleep
 
 from decorators import provide_entity, provide
@@ -18,7 +17,7 @@ def thread(entity, task_id, task, tasks_queue, test, success_url, callback_succe
 
 
 def main():
-    queue = TasksQueue(max_workers=50, executor=ProcessPoolExecutor)
+    queue = TasksQueue(max_workers=50)
     queue.run_worker()
     task_id = queue.add_task(thread, True, success_url="https://google.com/", callback_success_url="https://google.com/", callback_error_url="https://google.com/")
     task = queue.get_task_by_id(task_id)

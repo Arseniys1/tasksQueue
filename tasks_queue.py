@@ -1,5 +1,5 @@
 import uuid
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 
 from helpers import get_original_function_from_provide_wrappers
 from provide_constants import ENTITY, TASK_ID, TASK, TASKS_QUEUE
@@ -76,15 +76,13 @@ class Entity:
 
 
 class TasksQueue:
-    def __init__(self, executor=ThreadPoolExecutor, *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__()
         self.tasks = []
         self.task_ids = []
-        self.executor = executor(*args, **kwargs)
+        self.executor = ThreadPoolExecutor(*args, **kwargs)
         self.work = True
         self.worker_task = None
-        self.is_thread_executor = True if type(self.executor) == ThreadPoolExecutor else False
-        self.is_process_executor = True if type(self.executor) == ProcessPoolExecutor else False
 
     def generate_unique_task_id(self) -> str:
         while True:
