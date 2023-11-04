@@ -49,6 +49,7 @@ class Task:
         self.task_id = task_id
         self.future = None
         self.fn = fn
+        self.fn_name = str(fn)
         self.task_data = TaskData(self.task_id, *args, **kwargs)
         self.work = True
         self.future_result = None
@@ -94,6 +95,8 @@ class TasksQueue:
 
     def provide_to_function(self, fn, task, *args, **kwargs):
         function_element = entry.get_function_element(fn)
+        if not function_element:
+            return args, kwargs
         args = list(args)
         provide_elements = []
         names_reverse = function_element.names.copy()
