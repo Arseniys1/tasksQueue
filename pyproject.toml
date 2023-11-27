@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+authors = [
+  {name = "Arseniys", email = "thevalakas1@gmail.com"},
+]
+maintainers = [
+  {name = "Arseniys", email = "thevalakas1@gmail.com"}
+]
+
+name = "tasksQueue"
+description = "Library for convenient work with threads"
+readme = "README.md"
+license = {text = "MIT License"}
+requires-python = ">= 3.11.5"
+keywords = [
+    "threads",
+    "concurrent.futures",
+    "concurrent",
+    "futures",
+    "ThreadPoolExecutor"
+]
+dynamic = ["version"]
+dependencies = [
+    "certifi==2023.7.22",
+    "charset-normalizer==3.3.0",
+    "idna==3.4",
+    "requests==2.31.0",
+    "urllib3==2.0.6",
+    "jsonpickle~=3.0.2"
+]
+
+[project.urls]
+Homepage = "https://github.com/Arseniys1/tasksQueue"
+Documentation = "https://github.com/Arseniys1/tasksQueue"
+Repository = "https://github.com/Arseniys1/tasksQueue.git"
+Issues = "https://github.com/Arseniys1/tasksQueue/issues"
+

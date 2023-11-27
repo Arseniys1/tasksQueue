@@ -1,9 +1,7 @@
-from concurrent.futures import ProcessPoolExecutor
 from time import sleep
 
-from decorators import provide_entity, provide
-from provide_constants import TASK_ID, TASK, TASKS_QUEUE
-from tasks_queue import TaskData, generate_task_id, Task, TasksQueue
+from src.tasksQueue.decorators import provide_entity
+from src.tasksQueue.tasks_queue import TasksQueue
 
 
 @provide_entity
