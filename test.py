@@ -1,10 +1,9 @@
-from src.tasksQueue import TasksQueue, worker
+from src.tasksQueue import TasksQueue, worker, provide_entity
 
 queue = TasksQueue()
 
 
-def test(n, test1=None, result_callback=None, exception_callback=None):
-    raise Exception("123")
+def test(n, test1=None):
     return n, test1
 
 

@@ -1,3 +1,4 @@
+import inspect
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 
@@ -105,10 +106,17 @@ class TasksQueue:
             else:
                 return task_id
 
+    def remove_unused_kwargs(self, fn, **kwargs):
+        kwargs_keys = list(kwargs.keys())
+        for kwarg_name in kwargs_keys:
+            if kwarg_name not in inspect.getfullargspec(fn).args:
+                kwargs.pop(kwarg_name)
+        return kwargs
+
     def provide_to_function(self, fn, task, *args, **kwargs):
         function_element = entry.get_function_element(fn)
         if not function_element:
-            return args, kwargs
+            return args, self.remove_unused_kwargs(fn, **kwargs)
         args = list(args)
         provide_elements = []
         names_reverse = function_element.names.copy()
@@ -127,7 +135,7 @@ class TasksQueue:
         for kwarg_name in kwargs_keys:
             if kwarg_name not in function_element.fn_arguments.args:
                 kwargs.pop(kwarg_name)
-        return tuple(provide_elements + args), kwargs
+        return tuple(provide_elements + args), self.remove_unused_kwargs(fn, **kwargs)
 
     def add_task(self, fn, *args, **kwargs) -> str:
         fn = get_original_function_from_provide_wrappers(fn)
