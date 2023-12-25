@@ -2,6 +2,9 @@
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.dynamic]
+version = {attr = "tasksQueue.__version__"}
+
 [project]
 authors = [
   {name = "Arseniys", email = "thevalakas1@gmail.com"},
