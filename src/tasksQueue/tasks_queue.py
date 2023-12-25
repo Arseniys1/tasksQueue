@@ -106,7 +106,8 @@ class TasksQueue:
             else:
                 return task_id
 
-    def remove_unused_kwargs(self, fn, **kwargs):
+    @staticmethod
+    def remove_unused_kwargs(fn, **kwargs):
         kwargs_keys = list(kwargs.keys())
         for kwarg_name in kwargs_keys:
             if kwarg_name not in inspect.getfullargspec(fn).args:
