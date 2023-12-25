@@ -2,6 +2,16 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build]
+include = [
+    "/src/tasksQueue"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "/src/tasksQueue"
+]
+
 [tool.hatch.version]
 path = "/src/tasksQueue/__init__.py"
 
