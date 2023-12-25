@@ -15,7 +15,7 @@ def exc(task, exception):
     print(task, exception)
 
 
-queue.add_task(test, 1, test1=123, result_callback=res, exception_callback=exc)
+task_id = queue.add_task(test, 1, test1=123, result_callback=res, exception_callback=exc)
 
 queue.run_worker()
 

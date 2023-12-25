@@ -90,17 +90,20 @@ class Entity:
 
 
 class TasksQueue:
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, prefix=None, *args, **kwargs) -> None:
         super().__init__()
         self.tasks = []
         self.task_ids = []
         self.executor = ThreadPoolExecutor(*args, **kwargs)
         self.work = True
         self.worker_task = None
+        self.prefix = prefix
 
     def generate_unique_task_id(self) -> str:
         while True:
             task_id = generate_task_id()
+            if self.prefix:
+                task_id = f"{self.prefix}.{task_id}"
             if task_id in self.task_ids:
                 continue
             else:
