@@ -1,10 +1,10 @@
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 
-from helpers import get_original_function_from_provide_wrappers
-from provide_constants import ENTITY, TASK_ID, TASK, TASKS_QUEUE
-from tasks_entry import entry
-from tasks_worker import worker
+from .helpers import get_original_function_from_provide_wrappers
+from .provide_constants import ENTITY, TASK_ID, TASK, TASKS_QUEUE
+from .tasks_entry import entry
+from .tasks_worker import worker
 
 
 def generate_task_id():
@@ -34,6 +34,14 @@ class TaskData:
         if "callback_error_url" in self.kwargs:
             return self.kwargs["callback_error_url"]
 
+    def get_result_callback(self):
+        if "result_callback" in self.kwargs:
+            return self.kwargs["result_callback"]
+
+    def get_exception_callback(self):
+        if "exception_callback" in self.kwargs:
+            return self.kwargs["exception_callback"]
+
     def __getattr__(self, name):
         if name in self.kwargs:
             return self.kwargs[name]
@@ -53,6 +61,7 @@ class Task:
         self.task_data = TaskData(self.task_id, *args, **kwargs)
         self.work = True
         self.future_result = None
+        self.exception = None
         self.serialize_hide = ["future", "fn", "work", "serialize_hide"]
 
     def set_future(self, future):
@@ -60,6 +69,9 @@ class Task:
 
     def set_future_result(self, future_result):
         self.future_result = future_result
+
+    def set_exception(self, exception: Exception):
+        self.exception = exception
 
     def __getstate__(self):
         result = self.__dict__

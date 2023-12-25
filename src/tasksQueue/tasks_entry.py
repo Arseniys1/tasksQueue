@@ -1,6 +1,6 @@
 import inspect
 
-from helpers import get_original_function_from_provide_wrappers
+from .helpers import get_original_function_from_provide_wrappers
 
 
 class FunctionElement:

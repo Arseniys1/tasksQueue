@@ -1,6 +1,7 @@
 import jsonpickle
 import requests
-from __init__ import __fullname__
+
+from .lib import lib
 
 
 def request(url, data):
@@ -8,7 +9,7 @@ def request(url, data):
     jsonpickle.set_encoder_options('json', ensure_ascii=False)
     headers = {
         "Content-type": "application/json; charset=utf-8",
-        "Server": __fullname__
+        "Server": lib.fullname
     }
     requests.post(url, jsonpickle.encode(data, unpicklable=False), headers=headers)
 

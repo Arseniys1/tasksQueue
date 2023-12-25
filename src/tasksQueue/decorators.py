@@ -1,4 +1,4 @@
-from tasks_entry import entry
+from .tasks_entry import entry
 
 
 def get_provide_wrapper(fn):

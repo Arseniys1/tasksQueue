@@ -5,6 +5,12 @@ __version__ = version = "1.0.0"
 __fullname__ = "%s %s" % (__name__, __version__)
 
 
+from .lib import lib
+
+lib.name = __name__
+lib.version = __version__
+lib.fullname = __fullname__
+
 from .tasks_queue import Task, Entity, TaskData, TasksQueue
 from .tasks_worker import worker
 from .thread_sleep import thread_sleep
